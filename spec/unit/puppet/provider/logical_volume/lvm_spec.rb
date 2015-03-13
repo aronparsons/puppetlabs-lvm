@@ -161,12 +161,11 @@ describe provider_class do
           @resource.expects(:[]).with(:readahead).returns(nil).at_least_once
           @resource.expects(:[]).with(:size_is_minsize).returns(:false).at_least_once
           @resource.expects(:[]).with(:mirror).returns(nil).at_least_once
-          @resource.expects(:[]).with(:alloc).returns(nil).at_least_once        
+          @resource.expects(:[]).with(:alloc).returns(nil).at_least_once
           @provider.expects(:lvcreate).with('-n', 'mylv', '--size', '1g', 'myvg')
           @provider.create
           @provider.expects(:lvs).with('--noheading', '--unit', 'g', '/dev/myvg/mylv').returns(' 1.00g').at_least_once
           @provider.expects(:lvs).with('--noheading', '-o', 'vg_extent_size', '--units', 'k', '/dev/myvg/mylv').returns(' 1000.00k')
-          @provider.allow_minsize = false
           proc { @provider.size = '1m' }.should raise_error(Puppet::Error, /manual/)
         end
       end
@@ -188,7 +187,6 @@ describe provider_class do
           @provider.create
           @provider.expects(:lvs).with('--noheading', '--unit', 'g', '/dev/myvg/mylv').returns(' 1.00g').at_least_once
           @provider.expects(:lvs).with('--noheading', '-o', 'vg_extent_size', '--units', 'k', '/dev/myvg/mylv').returns(' 1000.00k')
-          @provider.allow_minsize = true
           proc { @provider.size = '1m' }.should output(/already/).to_stdout
         end
       end
